@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benjamin Forster</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#FFFFFF;
+    --paper:#0B0E14;
+    --dim:#6E6B60;
+    --red:#C23D22;
+    --sage:#5C8770;
+    --line:#E4E1D8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{background:var(--ink); color:var(--paper); font-family:'Space Grotesk',sans-serif; overflow:hidden;}
+  ::selection{background:var(--red); color:var(--ink);}
+  a{color:inherit;}
+
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:26px 5vw; background:linear-gradient(var(--ink) 40%, transparent);
+  }
+  .wordmark{
+    font-family:'JetBrains Mono',monospace; font-size:.78rem; letter-spacing:.14em;
+    text-decoration:none; color:var(--paper); cursor:pointer; background:none; border:none;
+  }
+  nav{display:flex; gap:clamp(16px,2.6vw,34px); flex-wrap:wrap;}
+  nav button{
+    font-family:'JetBrains Mono',monospace; font-size:.7rem; letter-spacing:.12em;
+    background:none; border:none; color:var(--dim); cursor:pointer; padding:4px 0;
+    border-bottom:1px solid transparent; transition:color .25s, border-color .25s;
+  }
+  nav button:hover{color:var(--paper);}
+  nav button.active{color:var(--paper); border-color:var(--red);}
+  .nav-toggle{display:none;}
+  @media(max-width:700px){
+    nav{position:fixed; inset:0; background:var(--ink); flex-direction:column; justify-content:center;
+      align-items:center; gap:28px; transform:translateY(-100%); transition:transform .4s ease;}
+    nav.open{transform:translateY(0);}
+    nav button{font-size:1rem;}
+    .nav-toggle{display:block; z-index:60; background:none; border:none; color:var(--paper);
+      font-family:'JetBrains Mono',monospace; font-size:.75rem; letter-spacing:.1em; cursor:pointer;}
+  }
+
+  .view{
+    position:fixed; inset:0; padding:0 5vw; overflow-y:auto; z-index:1;
+    opacity:0; visibility:hidden; transform:translateY(14px);
+    transition:opacity .5s ease, transform .5s ease, visibility 0s .5s;
+  }
+  .view.active{
+    opacity:1; visibility:visible; transform:translateY(0);
+    transition:opacity .5s ease, transform .5s ease, visibility 0s 0s;
+  }
+
+  #view-home{display:flex; align-items:center; justify-content:center; text-align:center;}
+  #view-home h1{
+    font-family:'Space Grotesk',sans-serif; font-weight:300; letter-spacing:.3em; line-height:1;
+    font-size:clamp(1.1rem,2.6vw,1.6rem); text-transform:uppercase;
+  }
+  .home-cue{
+    position:absolute; bottom:38px; left:50%; transform:translateX(-50%);
+    font-family:'JetBrains Mono',monospace; font-size:.65rem; letter-spacing:.18em; color:var(--dim);
+  }
+
+  .view-inner{padding:120px 0 90px; min-height:100%;}
+  .section-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:44px; flex-wrap:wrap; gap:12px;}
+  .section-head h2{font-family:'Bebas Neue',sans-serif; font-size:clamp(2rem,4.4vw,3.4rem); letter-spacing:.01em;}
+  .section-head .count{font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--dim); letter-spacing:.1em;}
+
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:2px; background:var(--line);}
+  .card{background:var(--ink); position:relative; overflow:hidden; cursor:pointer; text-decoration:none; display:block; color:inherit;}
+  .card .visual{aspect-ratio:4/5; position:relative; overflow:hidden;}
+  .card .visual img{width:100%; height:100%; object-fit:cover; display:block;}
+  .card .caption{padding:16px 4px 4px; display:flex; justify-content:space-between; align-items:flex-end; gap:10px;}
+  .card h3{font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:.01em;}
+  .card .tag{font-family:'JetBrains Mono',monospace; font-size:.6rem; letter-spacing:.1em; color:var(--dim); white-space:nowrap;}
+  .card .visual::after{content:''; position:absolute; inset:0; background:#000; opacity:0; transition:opacity .3s;}
+  .card:hover .visual::after{opacity:.15;}
+  .card:hover h3{color:var(--red);}
+
+  .v-a{background:radial-gradient(circle at 30% 20%,rgba(216,71,43,.28),transparent 55%),radial-gradient(circle at 75% 80%,rgba(127,169,143,.2),transparent 50%),linear-gradient(160deg,#161a13,#0B0E14 70%);}
+  .v-b{background:linear-gradient(200deg,#141810,#0B0E14 65%);}
+  .v-b .lines{position:absolute; inset:0; display:flex; flex-direction:column; justify-content:space-evenly; padding:14px;}
+  .v-b .lines i{height:1px; background:rgba(127,169,143,.2);}
+  .v-c{background:linear-gradient(200deg,#161511,#0B0E14 65%); display:flex; align-items:center; justify-content:center;}
+  .v-open{background:transparent; border:1px dashed var(--line); display:flex; align-items:center; justify-content:center; text-align:center; color:var(--dim); font-family:'JetBrains Mono',monospace; font-size:.66rem; letter-spacing:.06em; padding:20px; cursor:default;}
+  .empty-msg{font-family:'JetBrains Mono',monospace; font-size:.75rem; color:var(--dim); letter-spacing:.05em;}
+
+  .play-badge{
+    position:absolute; top:14px; right:14px; width:34px; height:34px; border-radius:50%;
+    background:rgba(11,14,20,.75); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; z-index:2;
+  }
+  .play-badge svg{width:11px; height:11px; fill:#F2EFE6; margin-left:2px;}
+
+  /* ===== VIDEO LIGHTBOX ===== */
+  #lightbox{
+    position:fixed; inset:0; z-index:200; background:rgba(11,14,20,.94);
+    display:flex; align-items:center; justify-content:center; padding:6vw;
+    opacity:0; visibility:hidden; transition:opacity .3s ease, visibility 0s .3s;
+  }
+  #lightbox.open{opacity:1; visibility:visible; transition:opacity .3s ease, visibility 0s 0s;}
+  #lightbox .box{width:100%; max-width:1100px;}
+  #lightbox .frame-wrap{position:relative; width:100%; aspect-ratio:16/9; background:#000;}
+  #lightbox iframe{position:absolute; inset:0; width:100%; height:100%; border:0;}
+  #lightbox .lb-close{
+    display:block; margin:0 0 14px auto; background:none; border:none; cursor:pointer;
+    font-family:'JetBrains Mono',monospace; font-size:.72rem; letter-spacing:.12em; color:#9B988C;
+  }
+  #lightbox .lb-close:hover{color:#F2EFE6;}
+
+  #view-about .lead{
+    font-family:'Space Grotesk',sans-serif; font-weight:300; font-size:clamp(1.2rem,2.4vw,1.8rem);
+    line-height:1.4; max-width:760px;
+  }
+  #view-about .lead .hl{color:var(--red);}
+  .about-meta{margin-top:40px; display:flex; gap:56px; flex-wrap:wrap; font-family:'JetBrains Mono',monospace; font-size:.72rem; color:var(--dim);}
+  .about-meta div span{display:block; color:var(--paper); font-size:.92rem; margin-top:6px;}
+
+  #view-contact .row{display:flex; flex-wrap:wrap; gap:14px 40px; margin-top:6px;}
+  #view-contact a.link{
+    font-family:'JetBrains Mono',monospace; font-size:.8rem; letter-spacing:.04em;
+    text-decoration:none; border-bottom:1px solid var(--line); padding-bottom:5px; transition:color .3s,border-color .3s;
+  }
+  #view-contact a.link:hover{color:var(--red); border-color:var(--red);}
+  .foot-note{margin-top:60px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    font-family:'JetBrains Mono',monospace; font-size:.6rem; color:var(--dim); letter-spacing:.08em;}
+
+  @media(prefers-reduced-motion:reduce){*{animation:none !important; transition:none !important;}}
+</style>
+</head>
+<body>
+
+<header>
+  <button class="wordmark" data-target="home">FORSTER</button>
+  <button class="nav-toggle" id="navToggle">MENU</button>
+  <nav id="nav">
+    <button data-target="work">WORK</button>
+    <button data-target="film">FILM</button>
+    <button data-target="photo">PHOTO</button>
+    <button data-target="archive">ARCHIVE</button>
+    <button data-target="about">ABOUT</button>
+    <button data-target="contact">CONTACT</button>
+  </nav>
+</header>
+
+<section class="view active" id="view-home">
+  <h1>BENJAMIN FORSTER</h1>
+</section>
+
+<section class="view" id="view-work">
+  <div class="view-inner">
+    <div class="section-head"><h2>Work</h2><span class="count">SELECCIÓN</span></div>
+    <div class="grid" id="grid-work"></div>
+  </div>
+</section>
+
+<section class="view" id="view-film">
+  <div class="view-inner">
+    <div class="section-head"><h2>Film</h2><span class="count" id="count-film">00</span></div>
+    <div class="grid" id="grid-film"></div>
+  </div>
+</section>
+
+<section class="view" id="view-photo">
+  <div class="view-inner">
+    <div class="section-head"><h2>Photo</h2><span class="count" id="count-photo">00</span></div>
+    <div class="grid" id="grid-photo"></div>
+  </div>
+</section>
+
+<section class="view" id="view-archive">
+  <div class="view-inner">
+    <div class="section-head"><h2>Archive</h2><span class="count">CUALQUIER FORMATO</span></div>
+    <div class="grid" id="grid-archive"></div>
+  </div>
+</section>
+
+<section class="view" id="view-about">
+  <div class="view-inner">
+    <div class="section-head"><h2>About</h2></div>
+    <p class="lead">Primer año en Diseño de Imagen y Sonido, <span class="hl">UBA</span>.</p>
+    <div class="about-meta">
+      <div>UBICACIÓN<span>Buenos Aires, AR</span></div>
+      <div>CARRERA<span>Dis. Imagen y Sonido — UBA</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="view" id="view-contact">
+  <div class="view-inner">
+    <div class="section-head"><h2>Contact</h2></div>
+    <div class="row">
+      <a class="link" href="mailto:benjaminforster04@gmail.com">benjaminforster04@gmail.com</a>
+      <a class="link" href="#">Instagram</a>
+      <a class="link" href="#">Vimeo</a>
+    </div>
+    <div class="foot-note">
+      <span>BENJAMIN FORSTER © 2026</span>
+      <span>BFORSTER.NET</span>
+    </div>
+  </div>
+</section>
+
+<div id="lightbox">
+  <div class="box">
+    <button class="lb-close" id="lbClose">CERRAR ✕</button>
+    <div class="frame-wrap" id="lbFrameWrap"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   ZONA EDITABLE — TUS PROYECTOS
+   ============================================================
+   Para agregar un proyecto nuevo, copiá uno de los bloques { ... }
+   de abajo, pegalo antes del ] de cierre, y completá los campos.
+   No hace falta tocar nada más del archivo.
+
+   CAMPOS:
+   - title:    Nombre del proyecto
+   - category: "film" | "photo" | "archive"  (define en qué
+               sección(es) aparece — "archive" es para cualquier
+               otro formato: diseño, instalación, animación, etc.)
+   - tag:      Texto chico debajo del título (ej: "FOTO · 2026")
+   - image:    Link directo a una imagen (jpg/png/webp) para la
+               miniatura. Si lo dejás vacío (""), se usa un fondo
+               abstracto de relleno.
+   - video:    Para proyectos audiovisuales — pegá acá el link de
+               YouTube o Vimeo (el normal, de "compartir", no hace
+               falta convertirlo a nada). Al hacer click en la
+               tarjeta, el video se abre embebido ahí mismo en la
+               página. Si el proyecto no es un video, dejalo en "".
+   - link:     Alternativa a "video" — un link cualquiera (Drive,
+               Instagram, etc) que abre en pestaña nueva al hacer
+               click. Si completaste "video", este campo se ignora.
+   ============================================================ */
+
+  const PROJECTS = [
+    {
+      title: "Retrato en la ciudad",
+      category: "photo",
+      tag: "FOTO · 2026",
+      image: "",
+      video: "",
+      link: ""
+    },
+    {
+      title: "Intersticios",
+      category: "film",
+      tag: "CORTO · 3:40",
+      image: "",
+      video: "",
+      link: ""
+    },
+    {
+      title: "Paisaje sonoro",
+      category: "archive",
+      tag: "SONIDO · EXPERIMENTAL",
+      image: "",
+      video: "",
+      link: ""
+    }
+    // 👆 Copiá este bloque de acá arriba (con la coma antes)
+    // y pegalo para sumar un proyecto nuevo. Ejemplo:
+    // ,{
+    //   title: "Nombre del proyecto",
+    //   category: "film",
+    //   tag: "CORTO · 2026",
+    //   image: "https://link-a-un-thumbnail.jpg",
+    //   video: "https://www.youtube.com/watch?v=XXXXXXXXXXX",
+    //   link: ""
+    // }
+  ];
+
+/* ============================================================
+   FIN DE LA ZONA EDITABLE — no hace falta tocar nada de acá abajo
+   ============================================================ */
+
+  const fallbackPatterns = ['v-a', 'v-b', 'v-c'];
+
+  function toEmbedUrl(url){
+    try{
+      const yt = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/);
+      if(yt) return `https://www.youtube.com/embed/${yt[1]}?autoplay=1&rel=0`;
+      const vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+      if(vm) return `https://player.vimeo.com/video/${vm[1]}?autoplay=1`;
+    }catch(e){}
+    return null;
+  }
+
+  const playIcon = `<span class="play-badge"><svg viewBox="0 0 12 12"><polygon points="1,0 12,6 1,12"/></svg></span>`;
+
+  function cardHTML(p, index){
+    const visualContent = p.image
+      ? `<img src="${p.image}" alt="${p.title}" loading="lazy">`
+      : (fallbackPatterns[index % 3] === 'v-b'
+          ? `<div class="lines"><i></i><i></i><i></i><i></i></div>`
+          : '');
+    const visualClass = p.image ? '' : fallbackPatterns[index % 3];
+    const badge = p.video ? playIcon : '';
+
+    if(p.video){
+      return `
+      <div class="card" data-video="${p.video.replace(/"/g,'&quot;')}">
+        <div class="visual ${visualClass}">${visualContent}${badge}</div>
+        <div class="caption"><h3>${p.title}</h3><span class="tag">${p.tag}</span></div>
+      </div>`;
+    }
+    const tag = p.link ? 'a' : 'div';
+    const hrefAttr = p.link ? `href="${p.link}" target="_blank" rel="noopener"` : '';
+    return `
+      <${tag} class="card" ${hrefAttr}>
+        <div class="visual ${visualClass}">${visualContent}</div>
+        <div class="caption"><h3>${p.title}</h3><span class="tag">${p.tag}</span></div>
+      </${tag}>`;
+  }
+
+  function emptyMsg(text){
+    return `<p class="empty-msg">${text}</p>`;
+  }
+
+  function render(){
+    const work = document.getElementById('grid-work');
+    const film = document.getElementById('grid-film');
+    const photo = document.getElementById('grid-photo');
+    const archive = document.getElementById('grid-archive');
+
+    work.innerHTML = PROJECTS.length
+      ? PROJECTS.map(cardHTML).join('')
+      : emptyMsg('Todavía no hay proyectos cargados.');
+
+    const filmItems = PROJECTS.filter(p => p.category === 'film');
+    const photoItems = PROJECTS.filter(p => p.category === 'photo');
+    const archiveItems = PROJECTS.filter(p => p.category === 'archive');
+
+    film.innerHTML = filmItems.length ? filmItems.map(cardHTML).join('') : emptyMsg('Todavía no hay proyectos audiovisuales cargados.');
+    photo.innerHTML = photoItems.length ? photoItems.map(cardHTML).join('') : emptyMsg('Todavía no hay fotos cargadas.');
+    archive.innerHTML = archiveItems.length ? archiveItems.map(cardHTML).join('') : emptyMsg('Espacio abierto para lo que venga.');
+
+    document.getElementById('count-film').textContent = String(filmItems.length).padStart(2,'0');
+    document.getElementById('count-photo').textContent = String(photoItems.length).padStart(2,'0');
+  }
+  render();
+
+  const views = document.querySelectorAll('.view');
+  const navButtons = document.querySelectorAll('nav button');
+  const wordmark = document.querySelector('.wordmark');
+
+  function showView(name){
+    views.forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
+    navButtons.forEach(b => b.classList.toggle('active', b.dataset.target === name));
+    const activeView = document.getElementById('view-' + name);
+    if(activeView) activeView.scrollTop = 0;
+  }
+
+  navButtons.forEach(b => b.addEventListener('click', () => {
+    showView(b.dataset.target);
+    nav.classList.remove('open');
+  }));
+  wordmark.addEventListener('click', () => showView('home'));
+
+  const toggle = document.getElementById('navToggle');
+  const nav = document.getElementById('nav');
+  toggle.addEventListener('click', () => nav.classList.toggle('open'));
+
+  // Video lightbox
+  const lightbox = document.getElementById('lightbox');
+  const lbFrameWrap = document.getElementById('lbFrameWrap');
+  const lbClose = document.getElementById('lbClose');
+
+  function openLightbox(videoUrl){
+    const embed = toEmbedUrl(videoUrl);
+    if(!embed){
+      window.open(videoUrl, '_blank', 'noopener');
+      return;
+    }
+    lbFrameWrap.innerHTML = `<iframe src="${embed}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+    lightbox.classList.add('open');
+  }
+  function closeLightbox(){
+    lightbox.classList.remove('open');
+    lbFrameWrap.innerHTML = '';
+  }
+
+  document.addEventListener('click', (e) => {
+    const card = e.target.closest('[data-video]');
+    if(card){ openLightbox(card.dataset.video); }
+  });
+  lbClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e) => { if(e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeLightbox(); });
+</script>
+
+</body>
+</html>
