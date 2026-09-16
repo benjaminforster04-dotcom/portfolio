@@ -75,6 +75,12 @@
   .section-head .count{font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--dim); letter-spacing:.1em;}
 
   .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:2px; background:var(--line);}
+  .subgroup{margin-bottom:56px;}
+  .subgroup:last-child{margin-bottom:0;}
+  .subgroup-head{
+    font-family:'JetBrains Mono',monospace; font-size:.68rem; letter-spacing:.14em; color:var(--dim);
+    margin-bottom:16px; padding-bottom:8px; border-bottom:1px solid var(--line);
+  }
   .card{background:var(--ink); position:relative; overflow:hidden; cursor:pointer; text-decoration:none; display:block; color:inherit;}
   .card .visual{aspect-ratio:4/5; position:relative; overflow:hidden;}
   .card .visual img{width:100%; height:100%; object-fit:cover; display:block;}
@@ -82,8 +88,17 @@
   .card h3{font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:.01em;}
   .card .tag{font-family:'JetBrains Mono',monospace; font-size:.6rem; letter-spacing:.1em; color:var(--dim); white-space:nowrap;}
   .card .visual::after{content:''; position:absolute; inset:0; background:#000; opacity:0; transition:opacity .3s;}
-  .card:hover .visual::after{opacity:.15;}
+  .card:hover .visual::after{opacity:.55;}
   .card:hover h3{color:var(--red);}
+
+  .hover-desc{
+    position:absolute; inset:0; z-index:3; padding:18px;
+    display:flex; align-items:flex-end;
+    font-family:'Space Grotesk',sans-serif; font-weight:300; font-size:.82rem; line-height:1.45;
+    color:#F2EFE6; opacity:0; transform:translateY(6px);
+    transition:opacity .3s ease, transform .3s ease; pointer-events:none;
+  }
+  .card:hover .hover-desc{opacity:1; transform:translateY(0);}
 
   .v-a{background:radial-gradient(circle at 30% 20%,rgba(216,71,43,.28),transparent 55%),radial-gradient(circle at 75% 80%,rgba(127,169,143,.2),transparent 50%),linear-gradient(160deg,#161a13,#0B0E14 70%);}
   .v-b{background:linear-gradient(200deg,#141810,#0B0E14 65%);}
@@ -100,21 +115,29 @@
   }
   .play-badge svg{width:11px; height:11px; fill:#F2EFE6; margin-left:2px;}
 
-  /* ===== VIDEO LIGHTBOX ===== */
-  #lightbox{
-    position:fixed; inset:0; z-index:200; background:rgba(11,14,20,.94);
-    display:flex; align-items:center; justify-content:center; padding:6vw;
-    opacity:0; visibility:hidden; transition:opacity .3s ease, visibility 0s .3s;
+  /* ===== INDIVIDUAL PROJECT PAGE ===== */
+  #view-project .view-inner{max-width:900px;}
+  .back-link{
+    display:block; margin-bottom:36px; background:none; border:none; cursor:pointer;
+    font-family:'JetBrains Mono',monospace; font-size:.72rem; letter-spacing:.1em;
+    color:var(--dim); transition:color .25s;
   }
-  #lightbox.open{opacity:1; visibility:visible; transition:opacity .3s ease, visibility 0s 0s;}
-  #lightbox .box{width:100%; max-width:1100px;}
-  #lightbox .frame-wrap{position:relative; width:100%; aspect-ratio:16/9; background:#000;}
-  #lightbox iframe{position:absolute; inset:0; width:100%; height:100%; border:0;}
-  #lightbox .lb-close{
-    display:block; margin:0 0 14px auto; background:none; border:none; cursor:pointer;
-    font-family:'JetBrains Mono',monospace; font-size:.72rem; letter-spacing:.12em; color:#9B988C;
+  .back-link:hover{color:var(--paper);}
+  .proj-frame-wrap{position:relative; width:100%; aspect-ratio:16/9; background:#000; margin-bottom:36px;}
+  .proj-frame-wrap iframe{position:absolute; inset:0; width:100%; height:100%; border:0;}
+  .proj-image-wrap{width:100%; aspect-ratio:16/9; margin-bottom:36px; overflow:hidden;}
+  .proj-image-wrap img{width:100%; height:100%; object-fit:cover; display:block;}
+  .proj-head{display:flex; align-items:baseline; gap:18px; flex-wrap:wrap; margin-bottom:22px;}
+  .proj-head h2{font-family:'Bebas Neue',sans-serif; font-size:clamp(1.8rem,4vw,3rem); letter-spacing:.01em;}
+  .proj-head .tag{font-family:'JetBrains Mono',monospace; font-size:.68rem; letter-spacing:.1em; color:var(--dim);}
+  .proj-synopsis{font-weight:300; font-size:clamp(1rem,1.6vw,1.2rem); line-height:1.6; max-width:640px; margin-bottom:32px;}
+  .proj-meta{display:flex; gap:44px; flex-wrap:wrap; font-family:'JetBrains Mono',monospace; font-size:.7rem; color:var(--dim); margin-bottom:32px;}
+  .proj-meta div span{display:block; color:var(--paper); font-size:.9rem; margin-top:6px;}
+  .proj-link{
+    display:inline-block; font-family:'JetBrains Mono',monospace; font-size:.75rem; letter-spacing:.08em;
+    text-decoration:none; border-bottom:1px solid var(--line); padding-bottom:5px; transition:color .3s, border-color .3s;
   }
-  #lightbox .lb-close:hover{color:#F2EFE6;}
+  .proj-link:hover{color:var(--red); border-color:var(--red);}
 
   #view-about .lead{
     font-family:'Space Grotesk',sans-serif; font-weight:300; font-size:clamp(1.2rem,2.4vw,1.8rem);
@@ -158,7 +181,7 @@
 <section class="view" id="view-work">
   <div class="view-inner">
     <div class="section-head"><h2>Work</h2><span class="count">SELECCIÓN</span></div>
-    <div class="grid" id="grid-work"></div>
+    <div id="grid-work"></div>
   </div>
 </section>
 
@@ -209,12 +232,9 @@
   </div>
 </section>
 
-<div id="lightbox">
-  <div class="box">
-    <button class="lb-close" id="lbClose">CERRAR ✕</button>
-    <div class="frame-wrap" id="lbFrameWrap"></div>
-  </div>
-</div>
+<section class="view" id="view-project">
+  <div class="view-inner" id="projectPage"></div>
+</section>
 
 <script>
 /* ============================================================
@@ -231,42 +251,73 @@
                otro formato: diseño, instalación, animación, etc.)
    - tag:      Texto chico debajo del título (ej: "FOTO · 2026")
    - image:    Link directo a una imagen (jpg/png/webp) para la
-               miniatura. Si lo dejás vacío (""), se usa un fondo
-               abstracto de relleno.
+               miniatura y para la página del proyecto. Si lo
+               dejás vacío (""), se usa un fondo abstracto.
    - video:    Para proyectos audiovisuales — pegá acá el link de
-               YouTube o Vimeo (el normal, de "compartir", no hace
-               falta convertirlo a nada). Al hacer click en la
-               tarjeta, el video se abre embebido ahí mismo en la
-               página. Si el proyecto no es un video, dejalo en "".
-   - link:     Alternativa a "video" — un link cualquiera (Drive,
-               Instagram, etc) que abre en pestaña nueva al hacer
-               click. Si completaste "video", este campo se ignora.
+               YouTube o Vimeo (el normal, de "compartir"). Al
+               hacer click en la tarjeta, te lleva a la página del
+               proyecto con el video embebido ahí. Si no es un
+               video, dejalo en "".
+   - link:     Un link externo opcional (Drive, Instagram, etc)
+               que se muestra como botón "VER MÁS" en la página
+               del proyecto. Podés dejarlo vacío.
+   - synopsis: Un párrafo corto contando de qué se trata el
+               proyecto. Se muestra en la página individual.
+   - blurb:    Descripción cortita (una frase) que aparece
+               flotando sobre la miniatura cuando pasás el mouse
+               por encima de la tarjeta, en Work/Film/Photo/
+               Archive. Si lo dejás vacío (""), no se muestra nada.
+   - group:    Opcional. Agrupa proyectos dentro de WORK bajo un
+               subtítulo (ej: "real estate"). Los proyectos con el
+               mismo group aparecen juntos, con esa palabra como
+               encabezado arriba. Los que no tienen group quedan
+               en la sección general de WORK, sin encabezado.
+   - meta:     Ficha técnica — lista de datos tipo
+               [{ label:"AÑO", value:"2026" }, ...]. Agregá los
+               campos que quieras (rol, duración, formato, etc),
+               o dejalo como [] si no querés mostrar ninguno.
    ============================================================ */
 
   const PROJECTS = [
-    {
-      title: "Retrato en la ciudad",
-      category: "photo",
-      tag: "FOTO · 2026",
-      image: "",
-      video: "",
-      link: ""
-    },
     {
       title: "La Despedida",
       category: "film",
       tag: "CORTO · 2026",
       image: "",
       video: "https://youtu.be/maeRzcf5mh8",
-      link: ""
+      link: "",
+      synopsis: "Una hija invoca el espíritu de su madre para despedirla como corresponde. No es un encuentro casual: es un ritual propio, una forma de soltarla.",
+      blurb: "Una hija invoca el espíritu de su madre para despedirla como corresponde.",
+      group: "",
+      meta: [
+        { label: "AÑO", value: "2026" },
+        { label: "ROL", value: "Producción, realización y dirección" },
+        { label: "DURACIÓN", value: "3:45" }
+      ]
     },
     {
-      title: "Paisaje sonoro",
-      category: "archive",
-      tag: "SONIDO · EXPERIMENTAL",
-      image: "",
+      title: "Sesión 01",
+      category: "photo",
+      tag: "FOTO · REAL ESTATE",
+      image: "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-cover.jpg",
       video: "",
-      link: ""
+      link: "https://drive.google.com/drive/folders/1KpZupQsyoHmZWTUxGbA5CsXa9l5b0hnn?usp=sharing",
+      synopsis: "",
+      blurb: "",
+      group: "real estate",
+      meta: []
+    },
+    {
+      title: "Sesión 02",
+      category: "photo",
+      tag: "FOTO · REAL ESTATE",
+      image: "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-02-cover.jpg",
+      video: "",
+      link: "https://drive.google.com/drive/folders/1fUonBMsTia4UQoOqCLmN57ZAL1JBj4-_?usp=sharing",
+      synopsis: "",
+      blurb: "",
+      group: "real estate",
+      meta: []
     }
     // 👆 Copiá este bloque de acá arriba (con la coma antes)
     // y pegalo para sumar un proyecto nuevo. Ejemplo:
@@ -276,7 +327,15 @@
     //   tag: "CORTO · 2026",
     //   image: "https://link-a-un-thumbnail.jpg",
     //   video: "https://www.youtube.com/watch?v=XXXXXXXXXXX",
-    //   link: ""
+    //   link: "",
+    //   synopsis: "Una frase o párrafo corto sobre el proyecto.",
+    //   blurb: "Una frase cortita para el hover de la tarjeta.",
+    //   group: "",
+    //   meta: [
+    //     { label: "AÑO", value: "2026" },
+    //     { label: "ROL", value: "Dirección, montaje" },
+    //     { label: "DURACIÓN", value: "3:00" }
+    //   ]
     // }
   ];
 
@@ -286,45 +345,61 @@
 
   const fallbackPatterns = ['v-a', 'v-b', 'v-c'];
 
-  function toEmbedUrl(url){
+  function toEmbedUrl(url, autoplay){
     try{
       const yt = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/);
-      if(yt) return `https://www.youtube.com/embed/${yt[1]}?autoplay=1&rel=0`;
+      if(yt) return `https://www.youtube.com/embed/${yt[1]}?${autoplay ? 'autoplay=1&' : ''}rel=0`;
       const vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-      if(vm) return `https://player.vimeo.com/video/${vm[1]}?autoplay=1`;
+      if(vm) return `https://player.vimeo.com/video/${vm[1]}${autoplay ? '?autoplay=1' : ''}`;
     }catch(e){}
     return null;
   }
 
   const playIcon = `<span class="play-badge"><svg viewBox="0 0 12 12"><polygon points="1,0 12,6 1,12"/></svg></span>`;
 
-  function cardHTML(p, index){
+  function cardHTML(p, globalIndex, patternIndex){
     const visualContent = p.image
       ? `<img src="${p.image}" alt="${p.title}" loading="lazy">`
-      : (fallbackPatterns[index % 3] === 'v-b'
+      : (fallbackPatterns[patternIndex % 3] === 'v-b'
           ? `<div class="lines"><i></i><i></i><i></i><i></i></div>`
           : '');
-    const visualClass = p.image ? '' : fallbackPatterns[index % 3];
+    const visualClass = p.image ? '' : fallbackPatterns[patternIndex % 3];
     const badge = p.video ? playIcon : '';
+    const hoverDesc = p.blurb ? `<div class="hover-desc">${p.blurb}</div>` : '';
 
-    if(p.video){
-      return `
-      <div class="card" data-video="${p.video.replace(/"/g,'&quot;')}">
-        <div class="visual ${visualClass}">${visualContent}${badge}</div>
+    return `
+      <div class="card" data-index="${globalIndex}">
+        <div class="visual ${visualClass}">${visualContent}${badge}${hoverDesc}</div>
         <div class="caption"><h3>${p.title}</h3><span class="tag">${p.tag}</span></div>
       </div>`;
-    }
-    const tag = p.link ? 'a' : 'div';
-    const hrefAttr = p.link ? `href="${p.link}" target="_blank" rel="noopener"` : '';
-    return `
-      <${tag} class="card" ${hrefAttr}>
-        <div class="visual ${visualClass}">${visualContent}</div>
-        <div class="caption"><h3>${p.title}</h3><span class="tag">${p.tag}</span></div>
-      </${tag}>`;
   }
 
   function emptyMsg(text){
     return `<p class="empty-msg">${text}</p>`;
+  }
+
+  function renderCards(items){
+    let pattern = 0;
+    return items.map(({p, i}) => cardHTML(p, i, pattern++)).join('');
+  }
+
+  function subgroupHTML(heading, items){
+    const head = heading ? `<div class="subgroup-head">${heading.toUpperCase()}</div>` : '';
+    return `<div class="subgroup">${head}<div class="grid">${renderCards(items)}</div></div>`;
+  }
+
+  function renderWork(items){
+    if(!items.length) return emptyMsg('Todavía no hay proyectos cargados.');
+
+    const ungrouped = items.filter(o => !o.p.group);
+    const groupNames = [...new Set(items.filter(o => o.p.group).map(o => o.p.group))];
+
+    let html = '';
+    if(ungrouped.length) html += subgroupHTML('', ungrouped);
+    groupNames.forEach(g => {
+      html += subgroupHTML(g, items.filter(o => o.p.group === g));
+    });
+    return html;
   }
 
   function render(){
@@ -333,17 +408,15 @@
     const photo = document.getElementById('grid-photo');
     const archive = document.getElementById('grid-archive');
 
-    work.innerHTML = PROJECTS.length
-      ? PROJECTS.map(cardHTML).join('')
-      : emptyMsg('Todavía no hay proyectos cargados.');
+    const all = PROJECTS.map((p, i) => ({p, i}));
+    const filmItems = all.filter(o => o.p.category === 'film');
+    const photoItems = all.filter(o => o.p.category === 'photo');
+    const archiveItems = all.filter(o => o.p.category === 'archive');
 
-    const filmItems = PROJECTS.filter(p => p.category === 'film');
-    const photoItems = PROJECTS.filter(p => p.category === 'photo');
-    const archiveItems = PROJECTS.filter(p => p.category === 'archive');
-
-    film.innerHTML = filmItems.length ? filmItems.map(cardHTML).join('') : emptyMsg('Todavía no hay proyectos audiovisuales cargados.');
-    photo.innerHTML = photoItems.length ? photoItems.map(cardHTML).join('') : emptyMsg('Todavía no hay fotos cargadas.');
-    archive.innerHTML = archiveItems.length ? archiveItems.map(cardHTML).join('') : emptyMsg('Espacio abierto para lo que venga.');
+    work.innerHTML = renderWork(all);
+    film.innerHTML = filmItems.length ? `<div class="grid">${renderCards(filmItems)}</div>` : emptyMsg('Todavía no hay proyectos audiovisuales cargados.');
+    photo.innerHTML = photoItems.length ? `<div class="grid">${renderCards(photoItems)}</div>` : emptyMsg('Todavía no hay fotos cargadas.');
+    archive.innerHTML = archiveItems.length ? `<div class="grid">${renderCards(archiveItems)}</div>` : emptyMsg('Espacio abierto para lo que venga.');
 
     document.getElementById('count-film').textContent = String(filmItems.length).padStart(2,'0');
     document.getElementById('count-photo').textContent = String(photoItems.length).padStart(2,'0');
@@ -353,12 +426,14 @@
   const views = document.querySelectorAll('.view');
   const navButtons = document.querySelectorAll('nav button');
   const wordmark = document.querySelector('.wordmark');
+  let lastSectionView = 'home';
 
   function showView(name){
     views.forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
     navButtons.forEach(b => b.classList.toggle('active', b.dataset.target === name));
     const activeView = document.getElementById('view-' + name);
     if(activeView) activeView.scrollTop = 0;
+    if(name !== 'project') lastSectionView = name;
   }
 
   navButtons.forEach(b => b.addEventListener('click', () => {
@@ -371,32 +446,55 @@
   const nav = document.getElementById('nav');
   toggle.addEventListener('click', () => nav.classList.toggle('open'));
 
-  // Video lightbox
-  const lightbox = document.getElementById('lightbox');
-  const lbFrameWrap = document.getElementById('lbFrameWrap');
-  const lbClose = document.getElementById('lbClose');
+  // ===== Individual project page =====
+  const projectPage = document.getElementById('projectPage');
 
-  function openLightbox(videoUrl){
-    const embed = toEmbedUrl(videoUrl);
-    if(!embed){
-      window.open(videoUrl, '_blank', 'noopener');
-      return;
+  function openProject(index){
+    const p = PROJECTS[index];
+    if(!p) return;
+
+    const embed = p.video ? toEmbedUrl(p.video, false) : null;
+    let heroHTML;
+    if(embed){
+      heroHTML = `<div class="proj-frame-wrap"><iframe src="${embed}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>`;
+    } else if(p.image){
+      heroHTML = `<div class="proj-image-wrap"><img src="${p.image}" alt="${p.title}"></div>`;
+    } else {
+      const pat = fallbackPatterns[index % 3];
+      heroHTML = `<div class="proj-image-wrap ${pat}"></div>`;
     }
-    lbFrameWrap.innerHTML = `<iframe src="${embed}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
-    lightbox.classList.add('open');
-  }
-  function closeLightbox(){
-    lightbox.classList.remove('open');
-    lbFrameWrap.innerHTML = '';
+
+    const metaHTML = (p.meta || []).filter(m => m.value).length
+      ? `<div class="proj-meta">${p.meta.filter(m=>m.value).map(m => `<div>${m.label}<span>${m.value}</span></div>`).join('')}</div>`
+      : '';
+
+    const synopsisHTML = p.synopsis
+      ? `<p class="proj-synopsis">${p.synopsis}</p>`
+      : '';
+
+    const linkHTML = p.link
+      ? `<a class="proj-link" href="${p.link}" target="_blank" rel="noopener">VER MÁS ↗</a>`
+      : '';
+
+    projectPage.innerHTML = `
+      <button class="back-link" id="backLink">← VOLVER</button>
+      ${heroHTML}
+      <div class="proj-head">
+        <h2>${p.title}</h2>
+        <span class="tag">${p.tag}</span>
+      </div>
+      ${synopsisHTML}
+      ${metaHTML}
+      ${linkHTML}
+    `;
+    document.getElementById('backLink').addEventListener('click', () => showView(lastSectionView));
+    showView('project');
   }
 
   document.addEventListener('click', (e) => {
-    const card = e.target.closest('[data-video]');
-    if(card){ openLightbox(card.dataset.video); }
+    const card = e.target.closest('[data-index]');
+    if(card){ openProject(Number(card.dataset.index)); }
   });
-  lbClose.addEventListener('click', closeLightbox);
-  lightbox.addEventListener('click', (e) => { if(e.target === lightbox) closeLightbox(); });
-  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeLightbox(); });
 </script>
 
 </body>
