@@ -139,6 +139,14 @@
   }
   .proj-link:hover{color:var(--red); border-color:var(--red);}
 
+  .proj-gallery{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:2px;
+    background:var(--line); margin-top:40px;
+  }
+  .proj-gallery a{display:block; aspect-ratio:4/3; overflow:hidden;}
+  .proj-gallery img{width:100%; height:100%; object-fit:cover; display:block; transition:opacity .3s;}
+  .proj-gallery a:hover img{opacity:.75;}
+
   #view-about .lead{
     font-family:'Space Grotesk',sans-serif; font-weight:300; font-size:clamp(1.2rem,2.4vw,1.8rem);
     line-height:1.4; max-width:760px;
@@ -272,6 +280,12 @@
                mismo group aparecen juntos, con esa palabra como
                encabezado arriba. Los que no tienen group quedan
                en la sección general de WORK, sin encabezado.
+   - gallery:  Opcional. Lista de links a más fotos del proyecto
+               (además de "image", que es solo la portada). Se
+               muestran todas en una grilla abajo de todo en la
+               página individual del proyecto. Ejemplo:
+               ["https://.../foto1.jpg", "https://.../foto2.jpg"]
+               Dejalo como [] si no querés mostrar galería.
    - meta:     Ficha técnica — lista de datos tipo
                [{ label:"AÑO", value:"2026" }, ...]. Agregá los
                campos que quieras (rol, duración, formato, etc),
@@ -283,7 +297,7 @@
       title: "La Despedida",
       category: "film",
       tag: "CORTO · 2026",
-      image: "",
+      image: "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/la-despedida-cover.jpg",
       video: "https://youtu.be/maeRzcf5mh8",
       link: "",
       synopsis: "Una hija invoca el espíritu de su madre para despedirla como corresponde. No es un encuentro casual: es un ritual propio, una forma de soltarla.",
@@ -305,6 +319,27 @@
       synopsis: "",
       blurb: "",
       group: "real estate",
+      gallery: [
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-01.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-02.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-03.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-04.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-05.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-06.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-07.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-08.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-09.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-10.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-11.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-12.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-13.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-14.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-15.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-16.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-17.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-18.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-01-19.jpg"
+      ],
       meta: []
     },
     {
@@ -317,6 +352,14 @@
       synopsis: "",
       blurb: "",
       group: "real estate",
+      gallery: [
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-02-01.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-02-02.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-02-03.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-02-04.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-02-05.jpg",
+        "https://raw.githubusercontent.com/benjaminforster04-dotcom/portfolio/main/real-estate-02-06.jpg"
+      ],
       meta: []
     }
     // 👆 Copiá este bloque de acá arriba (con la coma antes)
@@ -476,6 +519,10 @@
       ? `<a class="proj-link" href="${p.link}" target="_blank" rel="noopener">VER MÁS ↗</a>`
       : '';
 
+    const galleryHTML = (p.gallery && p.gallery.length)
+      ? `<div class="proj-gallery">${p.gallery.map((src, gi) => `<a href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${p.title} ${gi+1}" loading="lazy"></a>`).join('')}</div>`
+      : '';
+
     projectPage.innerHTML = `
       <button class="back-link" id="backLink">← VOLVER</button>
       ${heroHTML}
@@ -486,6 +533,7 @@
       ${synopsisHTML}
       ${metaHTML}
       ${linkHTML}
+      ${galleryHTML}
     `;
     document.getElementById('backLink').addEventListener('click', () => showView(lastSectionView));
     showView('project');
